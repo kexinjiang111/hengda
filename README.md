@@ -23,6 +23,7 @@
 
 ```sh
 git clone https://github.com/kexinjiang111/hengda.git
+cd hengda
 ```
 
 ### 环境创建
@@ -40,14 +41,20 @@ pip install -r requiresments.txt
 ```py
 tesseract_cmd=r'<tesseractOCR安装目录>\tesseract.exe'
 ```
-### 运行项目
+## 运行项目
 在 conda 环境中运行以下命令：
 
 ```py
 python manage.py migrate
 python manage.py runserver
-访问 http://127.0.0.1:8000/ 查看项目。
 ```
+访问 http://127.0.0.1:8000/ 查看项目。
+## 注意事项
+- 发送邮箱功能，需要在settings.py以及contact\models.py中EMAIL_FROM替换成自己的邮箱
+- 邮箱授权码获取，在QQ邮箱的设置\账号\POP3中自行寻找
+- 百度地图api密钥，需要自行去注册账号申请
+- 本项目参考书籍《Python Web 开发从入门到实战（Django+Bootstrap）-微课视频版》 钱彬著。
+
 
 
 

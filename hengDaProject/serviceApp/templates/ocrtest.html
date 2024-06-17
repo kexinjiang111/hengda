@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+人脸识别开放平台
+{% endblock %}
+
+{% block content %}
+<link href="{% static 'css/news.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/codemirror.css' %}">
+<script src="{% static 'js/codemirror.js' %}"></script>
+<script src="{% static 'js/python.js' %}"></script>
+<style type="text/css">
+    .CodeMirror {
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+    }
+    .modal-content{
+        width: 1000px;
+        height: 500px;
+
+    }
+
+        .item {
+            margin: 20px 20px;
+        }
+        #output {
+            width: 300px;
+            height: 150px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: scroll;
+        }
+</style>
+
+<!-- 广告横幅 -->
+<div class="container-fluid">
+    <div class="row">
+        <img class="img-responsive model-img" src="{% static 'img/service.jpg' %}">
+    </div>
+</div>
+<!-- 主体内容 -->
+<div class="container">
+    <div class="row row-3">
+        <!-- 侧边导航栏 -->
+        <div class="col-md-3">
+            <div class="model-title">
+                服务支持
+            </div>
+            <div class="model-list">
+                <ul class="list-group">
+                    <li class="list-group-item" id='download'>
+                        <a href="{% url 'serviceApp:download' %}">资料下载</a>
+                    </li>
+                    <li class="list-group-item" id='platform'>
+                        <a href="{% url 'serviceApp:platform' %}">人脸识别开放平台</a>
+                    </li>
+                    <li class="list-group-item" id='ocr'>
+                        <a href="{% url 'serviceApp:ocr' %}">文字识别</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 说明文字和图片 -->
+        <div class="col-md-9">
+            <div class="model-details-title">
+                文字识别接口文档
+            </div>
+            <div class="model-details">
+                <h3>一. 体验产品</h3>
+                </br>
+                <!-- 按钮触发模态框 -->
+                <!-- Button to trigger the modal -->
+                <!-- 按钮用于触发模态框 -->
+                <!-- class="btn btn-primary btn-lg": 使用Bootstrap的样式类，分别表示按钮、主要按钮、大号按钮 -->
+                <!-- data-toggle="modal": 指示这是一个用于触发模态框的元素 -->
+                <!-- data-target="#myModal": 指定模态框的ID，当点击按钮时，将显示具有该ID的模态框 -->
+                <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+                    文字识别
+                </button>
+                <!-- 模态框（Modal） -->
+               <!-- 模态框的容器 -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <!-- modal-dialog: 定义模态框的对话框样式 -->
+                    <div class="modal-dialog">
+                        <!-- modal-content: 定义模态框的内容样式 -->
+                        <div class="modal-content">
+                            <!-- modal-header: 定义模态框的头部区域 -->
+                            <div class="modal-header">
+                                <!-- close: 关闭按钮，data-dismiss="modal" 用于关闭模态框 -->
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                   ×
+                                </button>
+                                <!-- 模态框标题 -->
+                                <h4 class="modal-title" id="myModalLabel">
+                                    在线文字检测
+                                </h4>
+                            </div>
+                            <!-- modal-body: 定义模态框的主体区域 -->
+                             <div class="row">
+                                 <div class="col-md-6">
+                                     <div class="item">
+                                     <img id="preview" src="{% static 'img/sample.png' %}" alt="预览图片" style="max-width: 300px;" />
+                                    <input type="file" id="image" name="image" accept="image/*" />
+
+                                </div>
+                                 </div>
+                                 <div class="col-md-6">
+                                     <div class="item">
+                                     <textarea id="output" disabled class="form-control" rows="5">
+                                     </textarea>
+                                     <p>识别结果</p>
+                                </div>
+                                 </div>
+
+
+                            </div>
+                            <button id="submit" class="btn btn-primary btn-lg">识别</button>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+
+                <script>
+                    $(function () {
+                        $('#image').on('change', function () {
+                            var r = new FileReader();
+                            f = document.getElementById('image').files[0];
+                            r.readAsDataURL(f);
+                            r.onload = function (e) {
+                                document.getElementById('preview').src = this.result;
+                            };
+                        });
+                    });
+                </script>
+                <script>
+                    $('#submit').click(function () {
+                        formdata = new FormData();
+                        var file = $("#image")[0].files[0];
+                        formdata.append("image", file);
+                        $.ajax({
+                            url: '/serviceApp/ocrtestDemo/', // 调用Django服务器计算函数
+                            type: 'POST', // 请求类型
+                            data: formdata,
+                            dataType: 'json', // 期望获得的响应类型为json
+                            processData: false,
+                            contentType: false,
+                            success: ShowResult // 在请求成功之后调用该回调函数输出结果
+                        })
+                    })
+                </script>
+                <script>
+                    function ShowResult(data) {
+                        output.value=data['output'];
+                    }
+                </script>
+                <h3>二. API接口说明</h3>
+                </br>
+                <h4><strong>基本信息：</strong></h4>
+                <p>
+                    请求类型：HTTP/HTTPS。请求方式：POST
+                </p>
+                <p>
+                    接口地址：http://myhengda.cn/serviceApp/ocrtest/
+                </p>
+                </br>
+                <h4><strong>接口描述：</strong></h4>
+                <p>
+                    文字识别
+                </p>
+
+                </br>
+                <h4><strong>本地调用示例：</strong></h4>
+
+                <div><textarea id="code" name="code">
+   # views.py
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from PIL import Image
+import io
+import easyocr
+
+@csrf_exempt
+def upload_view(request):
+    if request.method == 'POST':
+        if 'image' in request.FILES:
+            image = request.FILES['image']
+            img = Image.open(image)
+            img_byte_array = io.BytesIO()
+            img.save(img_byte_array, format='PNG')
+            img_byte_array = img_byte_array.getvalue()
+
+            reader = easyocr.Reader(['ch_sim', 'en'])  # 支持简体中文和英文
+            result = reader.readtext(img_byte_array)
+
+            text = "\n".join([res[1] for res in result])
+            return JsonResponse({'text': text})
+        else:
+            return JsonResponse({'error': 'No file uploaded'}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+                </textarea></div>
+                </br>
+                <h4><strong>调用结果：</strong></h4>
+                <textarea name="" id="" cols="30" rows="10">XXXXXXXXXXX</textarea>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        mode: {
+            name: "python",               // 设置代码模式为 Python
+            version: 3,                   // 指定 Python 版本为 3
+            singleLineStringErrors: false // 允许多行字符串
+        },
+        lineNumbers: true,                // 显示行号
+        indentUnit: 4,                    // 缩进单位为 4 个空格
+        tabMode: "shift",                 // 使用 shift-tab 模式
+        matchBrackets: true               // 自动匹配括号
+    });
+</script>
+
+{% endblock %}
